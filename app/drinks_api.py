@@ -5,7 +5,6 @@ from random import choice
 
 from app.exceptions import *
 
-MIN_INGREDIENT_LEN = 2
 MAX_INGREDIENTS_IN_DRINK = 16
 
 logger = logging.getLogger(__name__)
@@ -99,10 +98,6 @@ def get_drinks_by_ingredient(ingredient):
         APIError: error connecting to the API
         InvalidUserInput: no drinks with the ingredient
     """
-
-    # API doesn't return an error if there's an empty string provided for ingredient
-    assert len(ingredient) > MIN_INGREDIENT_LEN
-
     url = f'{api_url}/filter.php?i={ingredient}'
 
     try:
@@ -117,7 +112,7 @@ def get_drinks_by_ingredient(ingredient):
     except ValueError:
         raise InvalidUserInput(f'Invalid ingredient {ingredient}')
 
-def get_random_drink_by_ingredient(ingredient):
+def get_random_drink_id_by_ingredient(ingredient):
     """
     Get random drink from all drinks that contain the ingredient
 

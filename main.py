@@ -17,4 +17,4 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8443))
 
     bot = DrinkMixerBot(token)
-    bot.start_local()
+    bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)

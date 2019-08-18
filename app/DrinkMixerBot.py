@@ -1,7 +1,7 @@
 import logging
 
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters
-from telegram import KeyboardButton, ReplyKeyboardMarkup
+from telegram import KeyboardButton, ReplyKeyboardMarkup, ParseMode
 
 import app.drinks_api as dr
 from app.exceptions import *
@@ -19,6 +19,7 @@ class DrinkMixerBot:
         self.token = token
         self.updater = Updater(token=token)
         self.dispatcher = self.updater.dispatcher
+
 
         start_handler = CommandHandler('start', self.display_menu)
         menu_handler = CommandHandler('menu', self.display_menu)
@@ -101,9 +102,9 @@ class DrinkMixerBot:
         instructions = drink_dict['strInstructions']
 
         bot.send_photo(chat_id=update.message.chat_id, photo=img)
-        bot.send_message(chat_id=update.message.chat_id, text=name)
+        bot.send_message(chat_id=update.message.chat_id, text=f'*{name}*', parse_mode=ParseMode.MARKDOWN)
         bot.send_message(chat_id=update.message.chat_id, text=ingredients)
-        bot.send_message(chat_id=update.message.chat_id, text=instructions)
+        bot.send_message(chat_id=update.message.chat_id, text=f'_{instructions}_', parse_mode=ParseMode.MARKDOWN)
 
     def display_menu(self, bot, update):
         menu_options = [

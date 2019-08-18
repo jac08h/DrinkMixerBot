@@ -1,7 +1,7 @@
 class APIConnectionError(Exception):
     pass
 
-class InvalidUserInput(Exception):
+class NoDrinksFound(Exception):
     pass
 
 class MissingInfo(Exception):

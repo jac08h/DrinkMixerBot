@@ -11,10 +11,11 @@ logger = logging.getLogger(__name__)
 
 try:
     api_key = os.environ['COCKTAIL_DB_API_KEY']
+    api_url = f'https://www.thecocktaildb.com/api/json/v2/{api_key}/'
 except KeyError:
     api_key = 1
+    api_url = f'https://www.thecocktaildb.com/api/json/v1/{api_key}/'
 
-api_url = f'https://www.thecocktaildb.com/api/json/v1/{api_key}/'
 
 is_empty = lambda s: (s is None or len(s) == 0)
 
@@ -85,20 +86,20 @@ def get_random_drink():
         logging.error('Error connecting to the API')
         raise APIConnectionError(url)
 
-def get_drinks_by_ingredient(ingredient):
+def get_drinks_by_ingredients(ingredients):
     """
     Returns list of drinks which contain the ingredient
 
     Args:
-        ingredient (str)
+        ingredients (str)
     Returns:
         list[dicts]: list of dictionaries that contain info about the drink
             dict keys: strDrink, strDinkThumb, idDrink
     Raises:
         APIError: error connecting to the API
-        InvalidUserInput: no drinks with the ingredient
+        InvalidUserInput: no drinks with the ingredients
     """
-    url = f'{api_url}/filter.php?i={ingredient}'
+    url = f'{api_url}/filter.php?i={ingredients}'
 
     try:
         r = requests.get(url)
@@ -106,23 +107,23 @@ def get_drinks_by_ingredient(ingredient):
         logging.error('Error connecting to the API')
         raise APIConnectionError(url)
 
-    try:
-        data = r.json()
-        return data['drinks']
-    except ValueError:
-        raise InvalidUserInput(f'Invalid ingredient {ingredient}')
+    data = r.json()['drinks']
+    if data == 'None Found':
+        raise NoDrinksFound
+    else:
+        return data
 
-def get_random_drink_id_by_ingredient(ingredient):
+def get_random_drink_id_by_ingredients(ingredients):
     """
-    Get random drink from all drinks that contain the ingredient
+    Get random drink from all drinks that contain the ingredients
 
     Args:
-        ingredient (str)
+        ingredients (str)
 
     Returns:
         str - id of the random drink
     """
-    drinks = get_drinks_by_ingredient(ingredient)
+    drinks = get_drinks_by_ingredients(ingredients)
     random_drink = choice(drinks)
 
     return random_drink['idDrink']
@@ -156,4 +157,5 @@ def clean_up_ingredients(drink_dict):
 
 
 if __name__ == '__main__':
-    get_all_ingredients()
+    x = get_random_drink_id_by_ingredients('vodka,orange_juice')
+    print(x)

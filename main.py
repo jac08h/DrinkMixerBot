@@ -18,3 +18,4 @@ if __name__ == '__main__':
 
     bot = DrinkMixerBot(token)
     bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)
+    #bot.start_local()

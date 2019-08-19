@@ -39,9 +39,16 @@ class DrinkMixerBot:
             self.dispatcher.add_handler(handler)
 
     def usage(self, bot, update):
-        u = """Enter your ingredients (separated by `,`) to get a drink, e.g. *rum,coffee*.
+        u = """Enter your ingredients (separated by *,*) like *rum,coffee*.
         
-Type */random_drink* for completely random cocktail."""
+*/repeat_ingredients* to get another drink with same ingredients.
+
+*/random_drink* for completely random cocktail.
+
+*/usage* - show this message."""
+
+
+
         bot.send_message(chat_id=update.message.chat_id, text=u, parse_mode=ParseMode.MARKDOWN)
 
 
@@ -51,6 +58,8 @@ Type */random_drink* for completely random cocktail."""
 
     def ingredients_received(self, bot, update, user_data):
         ingredients = update.message.text
+        ingredients = [i.strip() for i in ingredients.split(',')]
+        ingredients = ','.join(ingredients)
         try:
             drink_id = dr.get_random_drink_id_by_ingredients(ingredients)
             drink_dict = dr.get_drink_by_id(drink_id)

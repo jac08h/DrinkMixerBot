@@ -14,8 +14,15 @@ if __name__ == '__main__':
         print('Missing token. You did not provide the TELEGRAM_TOKEN environment variable.')
         exit()
 
+    try:
+        database_url = os.environ['DATABASE_URL']
+    except KeyError:
+        print('Missing database url. You did not provide the DATABASE_URL environment variable.')
+        exit()
+
+
     port = int(os.environ.get('PORT', 8443))
 
-    bot = DrinkMixerBot(token)
-    bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)
-    #bot.start_local()
+    bot = DrinkMixerBot(token, database_url)
+    #bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)
+    bot.start_local()

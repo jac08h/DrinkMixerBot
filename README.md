@@ -1,4 +1,4 @@
-#DrinkMixerBot
+# DrinkMixerBot
 
 Telegram bot to find drinks by ingredients
 

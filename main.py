@@ -1,7 +1,10 @@
 import os
 import logging
 
+from app import app
 from app.DrinkMixerBot import DrinkMixerBot
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO,
@@ -24,5 +27,5 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8443))
 
     bot = DrinkMixerBot(token, database_url)
-    #bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)
-    bot.start_local()
+    bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)
+    #bot.start_local()

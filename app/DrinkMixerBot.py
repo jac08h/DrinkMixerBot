@@ -5,19 +5,27 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup, ParseMode
 
 import app.drinks_api as dr
 from app.exceptions import *
+from app.models import User
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-emojis = {'tropical_drink': '🍹',
-          'question_mark': '❓'}
+emojis = {'tropical_drink': '🍹'}
 
 
 class DrinkMixerBot:
-    def __init__(self, token):
+    def __init__(self, token, database_url):
         self.token = token
         self.updater = Updater(token=token)
         self.dispatcher = self.updater.dispatcher
 
+        engine = create_engine(database_url)
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
 
         start_handler = CommandHandler('start', self.display_menu)
         menu_handler = CommandHandler('menu', self.display_menu)
@@ -51,12 +59,28 @@ class DrinkMixerBot:
 
         bot.send_message(chat_id=update.message.chat_id, text=u, parse_mode=ParseMode.MARKDOWN)
 
+    def update_user_in_database(self, user_id):
+        user = self.session.query(User).filter(User.id == user_id).first()
+        time = datetime.now()
+        if user is None:
+            user = User(id=user_id, date_started=time, date_last_used=time)
+        else:
+            user.update_time(time)
+
+        self.session.add(user)
+        self.session.commit()
 
     def random_drink(self, bot, update):
+        user_id = update.message.chat.id
+        self.update_user_in_database(user_id)
+
         drink = dr.get_random_drink()
         self.send_drink(bot, update, drink)
 
     def ingredients_received(self, bot, update, user_data):
+        user_id = update.message.chat.id
+        self.update_user_in_database(user_id)
+
         ingredients = update.message.text
         ingredients = [i.strip() for i in ingredients.split(',')]
         ingredients = ','.join(ingredients)
@@ -95,6 +119,9 @@ class DrinkMixerBot:
         bot.send_message(chat_id=update.message.chat_id, text=f'_{instructions}_', parse_mode=ParseMode.MARKDOWN)
 
     def display_menu(self, bot, update):
+        user_id = update.message.chat.id
+        self.update_user_in_database(user_id)
+
         menu_options = [
             [KeyboardButton('/random_drink')],
             [KeyboardButton('/repeat_ingredients')],

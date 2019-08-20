@@ -27,8 +27,8 @@ class DrinkMixerBot:
         Session = sessionmaker(bind=engine)
         self.session = Session()
 
-        start_handler = CommandHandler('start', self.display_menu)
-        menu_handler = CommandHandler('menu', self.display_menu)
+        start_handler = CommandHandler('start', self.menu)
+        menu_handler = CommandHandler('menu', self.menu)
         usage_handler = CommandHandler('usage', self.usage)
         random_drink_handler = CommandHandler('random_drink', self.random_drink)
         repeat_ingredients_handler = CommandHandler('repeat_ingredients', self.repeat_ingredients, pass_user_data=True)
@@ -92,7 +92,7 @@ class DrinkMixerBot:
             user_data['ingredients'] = ingredients
 
         except NoDrinksFound:
-            bot.send_message(chat_id=update.message.chat_id, text='No drinks found.')
+            self.display_menu_keyboard(bot, update, 'No drinks found.')
 
 
     def repeat_ingredients(self, bot, update, user_data):
@@ -118,10 +118,14 @@ class DrinkMixerBot:
         bot.send_message(chat_id=update.message.chat_id, text=ingredients)
         bot.send_message(chat_id=update.message.chat_id, text=f'_{instructions}_', parse_mode=ParseMode.MARKDOWN)
 
-    def display_menu(self, bot, update):
+    def menu(self, bot, update):
         user_id = update.message.chat.id
         self.update_user_in_database(user_id)
 
+        self.display_menu_keyboard(bot, update, emojis['tropical_drink'])
+
+
+    def display_menu_keyboard(self, bot, update, text):
         menu_options = [
             [KeyboardButton('/random_drink')],
             [KeyboardButton('/repeat_ingredients')],
@@ -130,8 +134,9 @@ class DrinkMixerBot:
 
         keyboard = ReplyKeyboardMarkup(menu_options)
         bot.send_message(chat_id=update.message.chat_id,
-                         text=emojis['tropical_drink'],
+                         text=text,
                          reply_markup=keyboard)
+
 
     def start_webhook(self, url, port):
         self.updater.start_webhook(listen="0.0.0.0",

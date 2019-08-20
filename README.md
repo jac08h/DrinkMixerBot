@@ -18,4 +18,4 @@ Enter your ingredients (separated by **,**) like **rum,coffee**.
 | **/random_drink** | Get completely random drink
 | **/usage** | Show usage
 
-###[Try it out!](https://t.me/DrinkMixerBot)
+### [Try it out!](https://t.me/DrinkMixerBot)

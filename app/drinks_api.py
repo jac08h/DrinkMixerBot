@@ -5,6 +5,7 @@ from random import choice
 
 from app.exceptions import *
 
+
 MAX_INGREDIENTS_IN_DRINK = 16
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ def get_drink_by_id(drink_id):
 
     Raises:
         APIError: error connecting to the API
-        InvalidUserInput: no drinks with the ingredient
+        NoDrinksFound: no drinks with the ingredient
     """
     url = f'{api_url}/lookup.php?i={drink_id}'
 
@@ -68,7 +69,35 @@ def get_drink_by_id(drink_id):
         data = r.json()
         return data['drinks'][0]
     except ValueError:
-        raise InvalidUserInput(f'Invalid ingredient {drink_id}')
+        raise NoDrinksFound(f'Invalid ingredient {drink_id}')
+
+def get_drink_by_name(drink_name):
+    """
+    Return drink info by drink name
+
+    Args:
+        drink_name(str)
+
+    Returns:
+        drink dict from API
+
+    Raises:
+        APIError: error connecting to the API
+        NoDrinksFound: no drinks with the ingredient
+    """
+    url = f'{api_url}/search.php?s={drink_name}'
+
+    try:
+        r = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        logging.error('Error connecting to the API')
+        raise APIConnectionError(url)
+
+    try:
+        data = r.json()
+        return data['drinks'][0]
+    except TypeError:
+        raise NoDrinksFound(f'Drink `{drink_name}` not found')
 
 def get_random_drink():
     """
@@ -97,7 +126,7 @@ def get_drinks_by_ingredients(ingredients):
             dict keys: strDrink, strDinkThumb, idDrink
     Raises:
         APIError: error connecting to the API
-        InvalidUserInput: no drinks with the ingredients
+        NoDrinksFound: no drinks with the ingredients
     """
     url = f'{api_url}/filter.php?i={ingredients}'
 
@@ -157,5 +186,7 @@ def clean_up_ingredients(drink_dict):
 
 
 if __name__ == '__main__':
-    x = get_random_drink_id_by_ingredients('vodka,orange_juice')
+    from exceptions import *
+
+    x = get_drink_by_name('adfsjklsadl')
     print(x)

@@ -16,6 +16,7 @@ Enter your ingredients (separated by **,**) like **rum,coffee**.
 | :---:              |                   :--- |
 | **/repeat_ingredients** | Get another drink with same ingredients|
 | **/random_drink** | Get completely random drink
+| **/find_drink** | Find drink by name
 | **/usage** | Show usage
 
 ###[Try it out!](https://t.me/DrinkMixerBot)

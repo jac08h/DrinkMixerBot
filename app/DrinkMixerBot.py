@@ -72,8 +72,7 @@ class DrinkMixerBot:
 */usage* - show this message."""
 
 
-
-        bot.send_message(chat_id=update.message.chat_id, text=u, parse_mode=ParseMode.MARKDOWN)
+        self.display_menu_keyboard(bot, update, u)
 
     def update_user_in_database(self, user_id):
         user = self.session.query(User).filter(User.id == user_id).first()
@@ -91,6 +90,9 @@ class DrinkMixerBot:
         return ConversationHandler.END
 
     def drink_command_received(self, bot, update):
+        user_id = update.message.chat.id
+        self.update_user_in_database(user_id)
+
         bot.send_message(chat_id=update.message.chat_id, text='Enter a drink name or /cancel', parse_mode=ParseMode.MARKDOWN)
         return DRINK_RECEIVED
 

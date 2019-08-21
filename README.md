@@ -1,4 +1,4 @@
-#DrinkMixerBot
+# DrinkMixerBot
 
 Telegram bot to find drinks by ingredients
 
@@ -19,4 +19,4 @@ Enter your ingredients (separated by **,**) like **rum,coffee**.
 | **/find_drink** | Find drink by name
 | **/usage** | Show usage
 
-###[Try it out!](https://t.me/DrinkMixerBot)
+### [Try it out!](https://t.me/DrinkMixerBot)

@@ -23,9 +23,8 @@ if __name__ == '__main__':
         print('Missing database url. You did not provide the DATABASE_URL environment variable.')
         exit()
 
-
     port = int(os.environ.get('PORT', 8443))
 
     bot = DrinkMixerBot(token, database_url)
-    bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)
-    #bot.start_local()
+    # bot.start_webhook('https://drink-mixer-bot.herokuapp.com/', port)
+    bot.start_local()

@@ -18,6 +18,7 @@ emojis = {'tropical_drink': '🍹'}
 
 DRINK_RECEIVED, CANCEL = 0, 1
 
+
 class DrinkMixerBot:
     def __init__(self, token, database_url):
         self.token = token
@@ -33,6 +34,7 @@ class DrinkMixerBot:
         cancel_handler = CommandHandler('cancel', self.cancel_conversation)
 
         usage_handler = CommandHandler('usage', self.usage)
+        about_handler = CommandHandler('about', self.about)
         random_drink_handler = CommandHandler('random_drink', self.random_drink)
         repeat_ingredients_handler = CommandHandler('repeat_ingredients', self.repeat_ingredients, pass_user_data=True)
         by_ingredients_handler = MessageHandler(Filters.text, self.ingredients_received, pass_user_data=True)
@@ -45,10 +47,10 @@ class DrinkMixerBot:
             fallbacks=[cancel_handler]
         )
 
-
         handlers = [start_handler,
                     menu_handler,
                     usage_handler,
+                    about_handler,
 
                     random_drink_handler,
                     repeat_ingredients_handler,
@@ -69,10 +71,26 @@ class DrinkMixerBot:
 
 */find_drink* - get drink information
 
+*/about* - information about the bot and the author
+
 */usage* - show this message."""
 
-
         self.display_menu_keyboard(bot, update, u)
+
+    def about(self, bot, update):
+        about_message = """*About the author*
+    I'm Jakub and I enjoy programming (and many other stuff).
+    You can find some of my other projects on my [webpage](https://jac08h.github.io/).
+    I hope you enjoyed the bot. Cheers!
+    
+*About the bot*
+    The bot is written in programming language called *python*.
+    It uses *[CocktailDB]*(https://www.thecocktaildb.com/) to fetch information about the drinks.
+    If you're familiar with programming or just curious about how does a code for a chatbot look like, you can find it [here](https://github.com/jac08h/DrinkMixerBot).
+    """
+
+
+        self.display_menu_keyboard(bot, update, about_message)
 
     def update_user_in_database(self, user_id):
         user = self.session.query(User).filter(User.id == user_id).first()
@@ -93,7 +111,8 @@ class DrinkMixerBot:
         user_id = update.message.chat.id
         self.update_user_in_database(user_id)
 
-        bot.send_message(chat_id=update.message.chat_id, text='Enter a drink name or /cancel', parse_mode=ParseMode.MARKDOWN)
+        bot.send_message(chat_id=update.message.chat_id, text='Enter a drink name or /cancel',
+                         parse_mode=ParseMode.MARKDOWN)
         return DRINK_RECEIVED
 
     def drink_name_received(self, bot, update):
@@ -102,10 +121,10 @@ class DrinkMixerBot:
             drink_dict = dr.get_drink_by_name(drink_name)
             self.send_drink(bot, update, drink_dict)
         except NoDrinksFound:
-            bot.send_message(chat_id=update.message.chat_id, text=f'Drink *{drink_name}* not found.', parse_mode=ParseMode.MARKDOWN)
+            bot.send_message(chat_id=update.message.chat_id, text=f'Drink *{drink_name}* not found.',
+                             parse_mode=ParseMode.MARKDOWN)
 
         bot.send_message(chat_id=update.message.chat_id, text='Enter another drink or /cancel')
-
 
     def random_drink(self, bot, update):
         user_id = update.message.chat.id
@@ -131,7 +150,6 @@ class DrinkMixerBot:
         except NoDrinksFound:
             self.display_menu_keyboard(bot, update, f'No drinks containing *{ingredients}* found.')
 
-
     def repeat_ingredients(self, bot, update, user_data):
         try:
             ingredients = user_data['ingredients']
@@ -140,7 +158,6 @@ class DrinkMixerBot:
             self.send_drink(bot, update, drink_dict)
         except KeyError:
             bot.send_message(chat_id=update.message.chat_id, text='Nothing to repeat.')
-
 
     def send_drink(self, bot, update, drink_dict):
         drink_dict = dr.clean_up_ingredients(drink_dict)
@@ -161,13 +178,13 @@ class DrinkMixerBot:
 
         self.display_menu_keyboard(bot, update, emojis['tropical_drink'])
 
-
     def display_menu_keyboard(self, bot, update, text):
         menu_options = [
             [KeyboardButton('/random_drink')],
             [KeyboardButton('/repeat_ingredients')],
             [KeyboardButton('/find_drink')],
-            [KeyboardButton('/usage')]
+            [KeyboardButton('/about')],
+            [KeyboardButton('/usage')],
         ]
 
         keyboard = ReplyKeyboardMarkup(menu_options)
@@ -175,7 +192,6 @@ class DrinkMixerBot:
                          text=text,
                          parse_mode=ParseMode.MARKDOWN,
                          reply_markup=keyboard)
-
 
     def start_webhook(self, url, port):
         self.updater.start_webhook(listen="0.0.0.0",

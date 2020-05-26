@@ -79,16 +79,15 @@ class DrinkMixerBot:
 
     def about(self, bot, update):
         about_message = """*About the author*
-    I'm Jakub and I enjoy programming (and many other stuff).
+    I'm Jakub, and I enjoy programming (among many other things).
     You can find some of my other projects on my [webpage](https://jac08h.github.io/).
     I hope you enjoyed the bot. Cheers!
     
 *About the bot*
     The bot is written in programming language called *python*.
-    It uses *[CocktailDB]*(https://www.thecocktaildb.com/) to fetch information about the drinks.
-    If you're familiar with programming or just curious about how does a code for a chatbot look like, you can find it [here](https://github.com/jac08h/DrinkMixerBot).
+    It uses [CocktailDB](https://www.thecocktaildb.com/) to fetch information about the drinks.
+    If you're familiar with programming and want to use the code as an inspiration or a guide when writing your own bots, or you're just curious about how does a code for a chatbot look like, you can find it [here](https://github.com/jac08h/DrinkMixerBot).
     """
-
 
         self.display_menu_keyboard(bot, update, about_message)
 
@@ -191,7 +190,8 @@ class DrinkMixerBot:
         bot.send_message(chat_id=update.message.chat_id,
                          text=text,
                          parse_mode=ParseMode.MARKDOWN,
-                         reply_markup=keyboard)
+                         reply_markup=keyboard,
+                         disable_web_page_preview=True)
 
     def start_webhook(self, url, port):
         self.updater.start_webhook(listen="0.0.0.0",
